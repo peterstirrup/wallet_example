@@ -4,6 +4,8 @@ import (
 	"context"
 
 	"cloud.google.com/go/pubsub"
+	"github.com/peterstirrup/wallet_example/internal/domain/entities"
+	"github.com/rs/zerolog/log"
 )
 
 type Config struct {
@@ -17,7 +19,7 @@ type OrderCompleted struct {
 }
 
 type UseCases interface {
-	UpdateWalletBalance(ctx context.Context, userID string, amount float64) error
+	HandleOrder(ctx context.Context, order entities.Order) error
 }
 
 func NewOrderCompleted(cfg Config) *OrderCompleted {
@@ -32,7 +34,10 @@ func (s *OrderCompleted) Run(ctx context.Context) error {
 		defer msg.Ack()
 
 		// Implement me!
-		// s.useCases.UpdateWalletBalance(userID, amount)
+		var order entities.Order
+		if err := s.useCases.HandleOrder(ctx, order); err != nil {
+			log.Err(err).Msgf("failed to handle order with ID: %s", order.OrderID)
+		}
 
 		return
 	})

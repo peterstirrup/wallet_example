@@ -26,7 +26,25 @@ func NewWallet(cfg WalletConfig) *Wallet {
 }
 
 func (w *Wallet) GetWallet(ctx context.Context, userID string) (entities.Wallet, error) {
+	// Implement security checks here
 	return w.store.GetWallet(ctx, userID)
+}
+
+func (w *Wallet) HandleOrder(ctx context.Context, order entities.Order) error {
+	if order.Success {
+		return nil
+	}
+
+	wallet, err := w.store.GetWallet(ctx, order.UserID)
+	if err != nil {
+		return err
+	}
+
+	newBalance := wallet.Balance + order.Amount
+
+	// Implement checks: negative balance, etc.
+
+	return w.store.UpdateWalletBalance(ctx, order.UserID, newBalance)
 }
 
 func (w *Wallet) UpdateWalletBalance(ctx context.Context, userID string, amount float64) error {
