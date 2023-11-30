@@ -46,16 +46,3 @@ func (w *Wallet) HandleOrder(ctx context.Context, order entities.Order) error {
 
 	return w.store.UpdateWalletBalance(ctx, order.UserID, newBalance)
 }
-
-func (w *Wallet) UpdateWalletBalance(ctx context.Context, userID string, amount float64) error {
-	wallet, err := w.store.GetWallet(ctx, userID)
-	if err != nil {
-		return err
-	}
-
-	newBalance := wallet.Balance + amount
-
-	// Implement checks: negative balance, etc.
-
-	return w.store.UpdateWalletBalance(ctx, userID, newBalance)
-}
